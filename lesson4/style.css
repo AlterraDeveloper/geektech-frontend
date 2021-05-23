@@ -50,3 +50,19 @@ button.success {
   color: #104e15;
   background-color: chartreuse;
 }
+
+.monthes {
+  display: flex;
+  margin: 40px 0;
+}
+
+.monthes .tab {
+  border: 1px solid black;
+  padding: 10px;
+  margin: 10px;
+}
+
+.monthes .tab.active {
+  color: white;
+  background-color: black;
+}

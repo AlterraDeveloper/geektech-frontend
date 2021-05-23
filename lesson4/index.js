@@ -1,63 +1,52 @@
-
-
-{/* <Todo text="learn js"/> */}
+import { Todo } from "./Models/Todo";
 
 //ViewModel
-var Todos = [
-  new Todo("Learn JS"),
-  new Todo("Learn CSS"),
-  new Todo("Learn HTML"),
-];
+// var Monthes = {
+//   JAN: [],
+//   FEB: [],
+//   MAR: [new Todo("Learn JS"), new Todo("Learn CSS"), new Todo("Learn HTML")],
+//   APR: [],
+//   MAY: [new Todo("1"), new Todo("2")],
+//   JUN: [],
+//   JUL: [],
+//   AUG: [],
+//   SEP: [],
+//   OCT: [],
+//   NOV: [],
+//   DEC: [],
+// };
 
-function Todo(text, isComplete = false) {
-  this.text = text;
-  this.isComplete = isComplete;
-  this.render = function (index) {
-    var todo = document.createElement("li");
-    todo.dataset.id = index;
+const todoAppState = {
+  currentFilter: "all",
+  currentMonth: "MAR",
+  Todos: [],
+};
+document.querySelector(`#${todoAppState.currentMonth}`).classList.add("active");
 
-    this.isComplete
-      ? todo.classList.add("completed")
-      : todo.classList.remove("completed");
-
-    var todoCheckBtn = document.createElement("button");
-    todoCheckBtn.classList = "success";
-    todoCheckBtn.innerText = "✓";
-    self = this;
-    todoCheckBtn.addEventListener("click", function (self) {
-      var todoLi = this.parentElement;
-      var targetTodo = Todos[todoLi.dataset.id];
-      targetTodo.isComplete = !targetTodo.isComplete;
-      renderAll();
-    });
-    var todoSpan = document.createElement("span");
-    todoSpan.innerText = text;
-    var todoRemoveBtn = document.createElement("button");
-    todoRemoveBtn.classList = "danger";
-    todoRemoveBtn.innerText = "Delete";
-    todoRemoveBtn.addEventListener("click", function () {
-      var todoLi = this.parentElement;
-      Todos.pop();
-      Todos.splice(todoLi.dataset.id, 1);
-      renderAll();
-    });
-
-    todo.appendChild(todoCheckBtn);
-    todo.appendChild(todoSpan);
-    todo.appendChild(todoRemoveBtn);
-
-    return todo;
+const tabs = document.querySelectorAll(".tab");
+tabs.forEach((tab) => {
+  tab.onclick = () => {
+    document
+      .querySelector(`#${todoAppState.currentMonth}`)
+      .classList.remove("active");
+    todoAppState.currentMonth = tab.innerHTML;
+    tab.classList.add("active");
+    renderAll();
   };
-}
+});
 
-function renderAll(todos) {
-  todos = todos || Todos;
+function renderAll() {
+  let todos = todoAppState.Todos.filter(
+    filterBuilder(todoAppState.currentFilter)
+  );
   var todolist = document.getElementById("todolist-ul");
   todolist.innerHTML = "";
+  if (todos.length === 0) {
+    todolist.innerHTML = "<h3>Нет задач в этом месяце</h3>";
+  }
   todos.forEach(function (todo, index) {
-    todolist.appendChild(todo.render(index));
+    todolist.appendChild(todo.render());
   });
-  console.log(todos);
 }
 
 renderAll();
@@ -70,29 +59,33 @@ buttonAdd.addEventListener("click", function () {
     console.log("ADD TODO!!!");
     return;
   }
-  Todos.push(new Todo(inputValue, false));
+  todoAppState.Todos.push(
+    new Todo(inputValue, todoAppState.currentMonth, false)
+  );
   renderAll();
 });
 
 function filterBuilder(option) {
   if (option === "completed") {
     return function (todo) {
-      return todo.isComplete;
+      return todo.isComplete && todo.month === todoAppState.currentMonth;
     };
   }
   if (option === "uncompleted") {
     return function (todo) {
-      return !todo.isComplete;
+      return !todo.isComplete && todo.month === todoAppState.currentMonth;
     };
   }
   return function (todo) {
-    return true;
+    return todo.month === todoAppState.currentMonth;
   };
 }
 
 var todoFilter = document.querySelector("#todoFilter");
 todoFilter.addEventListener("change", function () {
-  renderAll(Todos.filter(filterBuilder(this.value)));
+  todoAppState.currentFilter = this.value;
+  renderAll();
+  // renderAll(Todos.filter(filterBuilder(this.value)));
 
   //   var filter = this.value;
   //   switch (filter) {
@@ -122,11 +115,11 @@ todoFilter.addEventListener("change", function () {
 // }, 2000);
 
 //adding element to page
-var newLi = document.createElement("li");
-newLi.innerHTML = "<span>new Li</span>";
-todolist.appendChild(newLi);
+// var newLi = document.createElement("li");
+// newLi.innerHTML = "<span>new Li</span>";
+// todolist.appendChild(newLi);
 
 //removing element from page
-var liToRemove = todolist.children[1];
+// var liToRemove = todolist.children[1];
 // liToRemove.style.display = 'none'
 // liToRemove.remove()
