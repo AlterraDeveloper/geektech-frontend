@@ -3,7 +3,7 @@ import Pet from "./Pet";
 // Cat => Pet => Animal => Object
 export default class Cat extends Pet {
   constructor(name) {
-    super(name, "Anya");
+    super(name);
   }
 
   makeVoice = () => {
